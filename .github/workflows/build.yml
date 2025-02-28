@@ -48,19 +48,19 @@ jobs:
                     -scheme Jorna \
                     -destination 'generic/platform=macOS' \
                     -archivePath dist/Jorna.xcarchive
-                npx create-dmg dist/Jorna.app dist/
+                npx create-dmg dist/Jorna.xcarchive/Products/Applications/Jorna.app dist/
                 mv dist/Jorna*.dmg dist/Jorna.dmg
-        - name: Notarize Jorna.dmg
-          run: |
-            xcrun notarytool submit \
-                --team-id 'K64KJB8N6L' \
-                --apple-id 'imran.askem@icloud.com' \
-                --password "$NOTARY_PASSWORD" \
-                --wait \
-                dist/Jorna.dmg
-            xcrun stapler staple dist/Jorna.dmg
-          env:
-            NOTARY_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
+        # - name: Notarize Jorna.dmg
+        #   run: |
+        #     xcrun notarytool submit \
+        #         --team-id 'K64KJB8N6L' \
+        #         --apple-id 'imran.askem@icloud.com' \
+        #         --password "$NOTARY_PASSWORD" \
+        #         --wait \
+        #         dist/Jorna.dmg
+        #     xcrun stapler staple dist/Jorna.dmg
+        #   env:
+        #     NOTARY_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
         - name: Upload Jorna.dmg
           uses: actions/upload-artifact@v4
           with:
