@@ -5,7 +5,7 @@ on:
 name: Build Jorna
 jobs:
     build_app:
-        runs-on: macos-latest
+        runs-on: macos-15
         name: Build Jorna
         steps:
         - name: Checkout
