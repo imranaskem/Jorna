@@ -60,6 +60,9 @@ jobs:
             appstore-connect-username: ${{ secrets.NOTARIZATION_USERNAME }}
             appstore-connect-password: ${{ secrets.NOTARIZATION_PASSWORD }}
             appstore-connect-team-id: K64KJB8N6L
+        - name: Staple Jorna.dmg
+          run: |
+            xcrun stapler staple dist/Jorna.dmg
         - name: Upload Jorna.dmg
           uses: actions/upload-artifact@v4
           with:
