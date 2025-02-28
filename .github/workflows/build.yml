@@ -68,7 +68,7 @@ jobs:
           env:
             NOTARY_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
         - name: Upload Jorna.dmg
-          uses: actions/upload-artifact@v3
+          uses: actions/upload-artifact@v4
           with:
             name: Jorna.dmg
             path: dist/Jorna.dmg
