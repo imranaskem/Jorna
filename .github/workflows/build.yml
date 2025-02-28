@@ -51,7 +51,6 @@ jobs:
                 xcodebuild \
                     -exportArchive \
                     -archivePath dist/Jorna.xcarchive \
-                    -exportOptionsPlist JornaCocoa/ExportOptions.plist \
                     -exportPath dist/ \
                     -allowProvisioningUpdates
                 npx create-dmg dist/Jorna.app dist/
