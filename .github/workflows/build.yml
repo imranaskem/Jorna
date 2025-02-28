@@ -50,6 +50,8 @@ jobs:
                     -archivePath dist/Jorna.xcarchive
                 npx create-dmg dist/Jorna.xcarchive/Products/Applications/Jorna.app dist/
                 mv dist/Jorna*.dmg dist/Jorna.dmg
+                echo "File moved to dist/Jorna.dmg"
+                ls -a
         - name: Notarize Release Build
           uses: lando/notarize-action@v2
           with:
