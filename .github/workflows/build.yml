@@ -56,7 +56,7 @@ jobs:
             product-path: "./dist/Jorna.dmg"
             appstore-connect-username: ${{ secrets.NOTARIZATION_USERNAME }}
             appstore-connect-password: ${{ secrets.NOTARIZATION_PASSWORD }}
-            appstore-connect-team-id: K64KJB8N6L
+            appstore-connect-team-id: 35R5JZ3Z4T
             verbose: true
         - name: Staple Jorna.dmg
           run: |
