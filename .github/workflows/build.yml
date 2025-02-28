@@ -50,9 +50,6 @@ jobs:
                     -archivePath dist/Jorna.xcarchive
                 npx create-dmg dist/Jorna.xcarchive/Products/Applications/Jorna.app dist/
                 mv dist/Jorna*.dmg dist/Jorna.dmg
-                echo "File moved to dist/Jorna.dmg"
-                cd dist
-                ls -la
         - name: Notarize Release Build
           uses: lando/notarize-action@v2
           with:
@@ -60,6 +57,7 @@ jobs:
             appstore-connect-username: ${{ secrets.NOTARIZATION_USERNAME }}
             appstore-connect-password: ${{ secrets.NOTARIZATION_PASSWORD }}
             appstore-connect-team-id: K64KJB8N6L
+            verbose: true
         - name: Staple Jorna.dmg
           run: |
             xcrun stapler staple dist/Jorna.dmg
