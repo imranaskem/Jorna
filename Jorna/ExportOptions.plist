@@ -3,6 +3,6 @@
 <plist version="1.0">
 <dict>
 	<key>method</key>
-	<string>validation</string>
+	<string>release-testing</string>
 </dict>
 </plist>
