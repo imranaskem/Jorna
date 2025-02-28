@@ -53,7 +53,7 @@ jobs:
         - name: Notarize Release Build
           uses: lando/notarize-action@v2
           with:
-            product-path: "/dist/MyApp.app"
+            product-path: "/dist/Jorna.dmg"
             appstore-connect-username: ${{ secrets.NOTARIZATION_USERNAME }}
             appstore-connect-password: ${{ secrets.NOTARIZATION_PASSWORD }}
             appstore-connect-team-id: K64KJB8N6L
