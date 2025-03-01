@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		4C0782CA2D73458A007B4842 /* SwiftJSONFormatter in Frameworks */ = {isa = PBXBuildFile; productRef = 4C0782C92D73458A007B4842 /* SwiftJSONFormatter */; };
-		4C0782CD2D7396F8007B4842 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 4C0782CC2D7396F8007B4842 /* SwiftyJSON */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,7 +27,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C0782CD2D7396F8007B4842 /* SwiftyJSON in Frameworks */,
 				4C0782CA2D73458A007B4842 /* SwiftJSONFormatter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -73,7 +71,6 @@
 			name = Jorna;
 			packageProductDependencies = (
 				4C0782C92D73458A007B4842 /* SwiftJSONFormatter */,
-				4C0782CC2D7396F8007B4842 /* SwiftyJSON */,
 			);
 			productName = Jorna;
 			productReference = 4CA6A9432D7231880010AF87 /* Jorna.app */;
@@ -105,7 +102,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				4C0782C82D73458A007B4842 /* XCRemoteSwiftPackageReference "SwiftJSONFormatter" */,
-				4C0782CB2D7396F8007B4842 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4CA6A9442D7231880010AF87 /* Products */;
@@ -344,14 +340,6 @@
 				minimumVersion = 2.0.0;
 			};
 		};
-		4C0782CB2D7396F8007B4842 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.2;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -359,11 +347,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4C0782C82D73458A007B4842 /* XCRemoteSwiftPackageReference "SwiftJSONFormatter" */;
 			productName = SwiftJSONFormatter;
-		};
-		4C0782CC2D7396F8007B4842 /* SwiftyJSON */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4C0782CB2D7396F8007B4842 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
-			productName = SwiftyJSON;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
