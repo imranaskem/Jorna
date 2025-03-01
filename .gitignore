@@ -37,6 +37,7 @@ Temporary Items
 ### Xcode ###
 ## User settings
 xcuserdata/
+dist/
 
 ## Xcode 8 and earlier
 *.xcscmblueprint
