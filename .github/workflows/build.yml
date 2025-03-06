@@ -52,7 +52,13 @@ jobs:
                     -scheme Jorna \
                     -destination 'generic/platform=macOS' \
                     -archivePath dist/Jorna.xcarchive
-                npx create-dmg dist/Jorna.xcarchive/Products/Applications/Jorna.app dist/
+                xcodebuild \
+                    -exportArchive \
+                    -archivePath dist/Jorna.xcarchive \
+                    -exportOptionsPlist Jorna/ExportOptions.plist \
+                    -exportPath dist/ \
+                    -allowProvisioningUpdates
+                npx create-dmg dist/Jorna.app dist/
                 mv dist/Jorna*.dmg dist/Jorna.dmg
         - name: Notarize Release Build
           env:
