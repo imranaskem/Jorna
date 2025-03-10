@@ -14,20 +14,39 @@ struct RequestView: View {
                 }
                 .frame(width: 90)
                 .pickerStyle(.menu)
-                
+
                 TextField("Request URI", text: $viewModel.endpoint)
                     .autocorrectionDisabled(true)
                     .frame(minWidth: 300)
-                
+
                 Button("Request") {
                     Task {
                         do {
                             try await viewModel.makeRequest()
                         }
                     }
-                }.keyboardShortcut(.return, modifiers: .shift)
+                }.keyboardShortcut(.return, modifiers: .command)
             }
-            
+
+            VStack {
+                HStack {
+                    Text("Headers").fontWeight(.bold)
+                    Button("Add") { self.viewModel.headers.append(Header()) }
+                    Spacer()
+                }
+
+                VStack {
+                    ForEach(self.$viewModel.headers) { $header in
+                        HStack {
+                            Toggle("Enable", isOn: $header.enabled)
+                            TextField("Key", text: $header.key)
+                            TextField("Value", text: $header.value)
+                        }
+                    }
+
+                }
+            }
+
             HStack {
                 VStack {
                     HStack {
@@ -37,14 +56,15 @@ struct RequestView: View {
                             viewModel.prettifyRequestBody()
                         }
                     }
-                    
+
                     TextEditor(text: $viewModel.requestBody)
                         .cornerRadius(8)
                 }
                 VStack {
                     HStack {
                         Text("Response")
-                        Text(viewModel.statusCode)
+                        Text(viewModel.statusCode).foregroundStyle(
+                            self.viewModel.responseColour())
                         Spacer()
                         Button("Prettify") {
                             viewModel.prettifyResponseBody()
@@ -53,13 +73,12 @@ struct RequestView: View {
                     TextEditor(text: $viewModel.responseBody)
                         .cornerRadius(8)
                 }
-                    
+
             }
             .font(.system(size: 12, design: .monospaced))
             .frame(minHeight: 300)
             .cornerRadius(8)
-            
-                
+
         }
         .padding()
     }
@@ -68,4 +87,3 @@ struct RequestView: View {
 #Preview {
     RequestView()
 }
-
