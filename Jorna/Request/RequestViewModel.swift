@@ -1,5 +1,6 @@
 import Foundation
 import SwiftJSONFormatter
+import SwiftUI
 
 enum HTTPMethod: String, CaseIterable, Identifiable {
     case GET, POST
@@ -13,6 +14,8 @@ extension RequestView {
         var responseBody = String()
         var statusCode = String()
         var method: HTTPMethod = .GET
+        var headers: [Header] = [Header()]
+        var headersExpanded: Bool = true
         var endpoint = "https://jsonplaceholder.typicode.com/posts"
 
         func makeRequest() async throws {
@@ -24,23 +27,32 @@ extension RequestView {
             var request = URLRequest(url: url)
             request.httpMethod = self.method.rawValue
 
+            for header in self.headers.filter({ $0.enabled }) {
+                if header.key != "" {
+                    request.setValue(
+                        header.value,
+                        forHTTPHeaderField: header.key)
+                }
+            }
+
             if self.method == .POST {
                 prettifyRequestBody()
                 guard
-                    let jsonObj = try? JSONSerialization.jsonObject(with: self.requestBody.data(using: .utf8)!)
+                    let jsonObj = try? JSONSerialization.jsonObject(
+                        with: self.requestBody.data(using: .utf8)!)
                 else {
                     self.responseBody = "Invalid JSON object"
                     return
                 }
-                
-                guard let jsonData = try? JSONSerialization.data(withJSONObject: jsonObj) else {
+
+                guard
+                    let jsonData = try? JSONSerialization.data(
+                        withJSONObject: jsonObj)
+                else {
                     self.responseBody = "Invalid JSON data"
                     return
                 }
                 request.httpBody = jsonData
-                request.setValue(
-                    "application/json; charset=UTF-8",
-                    forHTTPHeaderField: "Content-Type")
             }
 
             let (data, response) = try await URLSession.shared.data(
@@ -62,6 +74,14 @@ extension RequestView {
 
         func prettifyResponseBody() {
             self.responseBody = SwiftJSONFormatter.beautify(self.responseBody)
+        }
+
+        func responseColour() -> Color {
+            if self.statusCode.starts(with: "2") {
+                return .green
+            } else {
+                return .red
+            }
         }
     }
 }
