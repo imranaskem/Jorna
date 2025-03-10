@@ -61,7 +61,7 @@ extension RequestView {
         }
 
         func prettifyResponseBody() {
-            self.requestBody = SwiftJSONFormatter.beautify(self.responseBody)
+            self.responseBody = SwiftJSONFormatter.beautify(self.responseBody)
         }
     }
 }
