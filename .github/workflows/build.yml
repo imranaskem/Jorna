@@ -7,6 +7,8 @@ on:
 name: Build Jorna
 jobs:
     build_app:
+        permissions:
+            contents: write
         runs-on: macos-15
         name: Build Jorna
         steps:
