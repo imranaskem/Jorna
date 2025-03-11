@@ -1,11 +1,10 @@
 import SwiftUI
 
 struct RequestView: View {
-
     @State private var viewModel = ViewModel()
 
     var body: some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Picker(String(), selection: $viewModel.method) {
                     ForEach(HTTPMethod.allCases) { method in
@@ -13,19 +12,21 @@ struct RequestView: View {
                     }
                 }
                 .frame(width: 90)
+                .labelsHidden()
                 .pickerStyle(.menu)
 
                 TextField("Request URI", text: $viewModel.endpoint)
                     .autocorrectionDisabled(true)
                     .frame(minWidth: 300)
 
-                Button("Request") {
+                Button("Send", systemImage: "paperplane.fill") {
                     Task {
                         do {
                             try await viewModel.makeRequest()
                         }
                     }
-                }.keyboardShortcut(.return, modifiers: .command)
+                }
+                .keyboardShortcut(.return, modifiers: .command)
             }
 
             VStack {
@@ -43,11 +44,10 @@ struct RequestView: View {
                             TextField("Value", text: $header.value)
                         }
                     }
-
                 }
             }
 
-            HStack {
+            HSplitView {
                 VStack {
                     HStack {
                         Text("Request")
@@ -55,11 +55,13 @@ struct RequestView: View {
                         Button("Prettify") {
                             viewModel.prettifyRequestBody()
                         }
+                        .buttonStyle(.link)
                     }
 
                     TextEditor(text: $viewModel.requestBody)
                         .cornerRadius(8)
                 }
+                .padding(.horizontal, 5)
                 VStack {
                     HStack {
                         Text("Response")
@@ -69,16 +71,16 @@ struct RequestView: View {
                         Button("Prettify") {
                             viewModel.prettifyResponseBody()
                         }
+                        .buttonStyle(.link)
                     }
                     TextEditor(text: $viewModel.responseBody)
                         .cornerRadius(8)
                 }
-
+                .padding(.horizontal, 5)
             }
             .font(.system(size: 12, design: .monospaced))
             .frame(minHeight: 300)
             .cornerRadius(8)
-
         }
         .padding()
     }
