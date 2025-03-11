@@ -1,8 +1,17 @@
 import Foundation
+import SwiftData
 
-struct Header: Identifiable {
-    var id: UUID = UUID()
-    var enabled: Bool = true
-    var key: String = ""
-    var value: String = ""
+@Model
+class Header {
+    var enabled: Bool
+    var key: String
+    var value: String
+    var apiRequest: APIRequest?
+
+    init(enabled: Bool = true, key: String = "", value: String = "", apiRequest: APIRequest? = nil) {
+        self.enabled = enabled
+        self.key = key
+        self.value = value
+        self.apiRequest = apiRequest
+    }
 }

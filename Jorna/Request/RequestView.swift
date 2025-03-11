@@ -1,12 +1,14 @@
+import SwiftData
 import SwiftUI
 
 struct RequestView: View {
-    @State private var viewModel = ViewModel()
+    @Environment(\.modelContext) var modelContext
+    @Bindable var apiRequest: APIRequest
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Picker(String(), selection: $viewModel.method) {
+                Picker(String(), selection: $apiRequest.method) {
                     ForEach(HTTPMethod.allCases) { method in
                         Text(method.rawValue).tag(method)
                     }
@@ -15,14 +17,14 @@ struct RequestView: View {
                 .labelsHidden()
                 .pickerStyle(.menu)
 
-                TextField("Request URI", text: $viewModel.endpoint)
+                TextField("Request URI", text: $apiRequest.endpoint)
                     .autocorrectionDisabled(true)
                     .frame(minWidth: 300)
 
                 Button("Send", systemImage: "paperplane.fill") {
                     Task {
                         do {
-                            try await viewModel.makeRequest()
+                            try await apiRequest.makeRequest()
                         }
                     }
                 }
@@ -32,12 +34,12 @@ struct RequestView: View {
             VStack {
                 HStack {
                     Text("Headers").fontWeight(.bold)
-                    Button("Add") { self.viewModel.headers.append(Header()) }
+                    Button("Add") { addHeader() }
                     Spacer()
                 }
 
                 VStack {
-                    ForEach(self.$viewModel.headers) { $header in
+                    ForEach($apiRequest.headers) { $header in
                         HStack {
                             Toggle("Enable", isOn: $header.enabled)
                             TextField("Key", text: $header.key)
@@ -53,27 +55,27 @@ struct RequestView: View {
                         Text("Request")
                         Spacer()
                         Button("Prettify") {
-                            viewModel.prettifyRequestBody()
+                            apiRequest.prettifyRequestBody()
                         }
                         .buttonStyle(.link)
                     }
 
-                    TextEditor(text: $viewModel.requestBody)
+                    TextEditor(text: $apiRequest.requestBody)
                         .cornerRadius(8)
                 }
                 .padding(.horizontal, 5)
                 VStack {
                     HStack {
                         Text("Response")
-                        Text(viewModel.statusCode).foregroundStyle(
-                            self.viewModel.responseColour())
+                        Text(apiRequest.statusCode).foregroundStyle(
+                            responseColour(statusCode: apiRequest.statusCode))
                         Spacer()
                         Button("Prettify") {
-                            viewModel.prettifyResponseBody()
+                            apiRequest.prettifyResponseBody()
                         }
                         .buttonStyle(.link)
                     }
-                    TextEditor(text: $viewModel.responseBody)
+                    TextEditor(text: $apiRequest.responseBody)
                         .cornerRadius(8)
                 }
                 .padding(.horizontal, 5)
@@ -84,8 +86,16 @@ struct RequestView: View {
         }
         .padding()
     }
-}
+    
+    func addHeader() {
+        apiRequest.headers.append(Header())
+    }
 
-#Preview {
-    RequestView()
+    func responseColour(statusCode: String) -> Color {
+        if statusCode.starts(with: "2") {
+            return .green
+        } else {
+            return .red
+        }
+    }
 }
