@@ -1,7 +1,8 @@
 on:
-  push:
+  pull_request:
     branches:
       - main
+  push:
     tags:
       - "v*.*.*"
 name: Build Jorna
@@ -65,6 +66,7 @@ jobs:
                 npx create-dmg dist/Jorna.app dist/
                 mv dist/Jorna*.dmg dist/Jorna.dmg
         - name: Notarize Release Build
+          if: startsWith(github.ref, 'refs/tags/')
           env:
             NOTARIZATION_USERNAME: ${{ secrets.NOTARIZATION_USERNAME }}
             NOTARIZATION_PASSWORD: ${{ secrets.NOTARIZATION_PASSWORD }}
@@ -76,13 +78,9 @@ jobs:
             --wait \
             dist/Jorna.dmg
         - name: Staple Jorna.dmg
+          if: startsWith(github.ref, 'refs/tags/')
           run: |
             xcrun stapler staple dist/Jorna.dmg
-        - name: Upload Jorna.dmg
-          uses: actions/upload-artifact@v4
-          with:
-            name: Jorna.dmg
-            path: dist/Jorna.dmg
         - name: Release
           uses: softprops/action-gh-release@v2
           if: startsWith(github.ref, 'refs/tags/')
