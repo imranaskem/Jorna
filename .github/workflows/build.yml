@@ -48,7 +48,7 @@ jobs:
               # apply provisioning profile
               mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
               cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-        - name: Build Jorna.app
+        - name: Build App
           run: |
             mkdir -p dist
                 xcodebuild \
@@ -63,9 +63,12 @@ jobs:
                     -exportOptionsPlist Jorna/ExportOptions.plist \
                     -exportPath dist/ \
                     -allowProvisioningUpdates
-                npx create-dmg dist/Jorna.app dist/
-                mv dist/Jorna*.dmg dist/Jorna.dmg
-        - name: Notarize Release Build
+        - name: Create DMG
+          if: startsWith(github.ref, 'refs/tags/')
+          run: |
+            npx create-dmg dist/Jorna.app dist/
+            mv dist/Jorna*.dmg dist/Jorna.dmg
+        - name: Notarize Release
           if: startsWith(github.ref, 'refs/tags/')
           env:
             NOTARIZATION_USERNAME: ${{ secrets.NOTARIZATION_USERNAME }}
@@ -77,11 +80,11 @@ jobs:
             --password "$NOTARIZATION_PASSWORD" \
             --wait \
             dist/Jorna.dmg
-        - name: Staple Jorna.dmg
+        - name: Staple DMG
           if: startsWith(github.ref, 'refs/tags/')
           run: |
             xcrun stapler staple dist/Jorna.dmg
-        - name: Release
+        - name: Release App
           uses: softprops/action-gh-release@v2
           if: startsWith(github.ref, 'refs/tags/')
           with:
