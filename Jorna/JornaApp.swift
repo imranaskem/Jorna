@@ -4,7 +4,7 @@ import SwiftUI
 struct JornaApp: App {
     var body: some Scene {
         WindowGroup {
-            RequestView()
-        }
+            NavigationManagerView()
+        }.modelContainer(for: APIRequest.self)
     }
 }
