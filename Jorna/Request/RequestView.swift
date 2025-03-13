@@ -7,6 +7,8 @@ struct RequestView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
+            TextField("Request Name", text: $apiRequest.name).frame(width: 300)
+            
             HStack {
                 Picker(String(), selection: $apiRequest.method) {
                     ForEach(HTTPMethod.allCases) { method in
