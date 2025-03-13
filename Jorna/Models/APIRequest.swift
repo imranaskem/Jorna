@@ -51,13 +51,13 @@ final class APIRequest {
             }
         }
 
-        if self.method == .POST {
+        if !self.requestBody.isEmpty {
             prettifyRequestBody()
             guard
                 let jsonObj = try? JSONSerialization.jsonObject(
                     with: self.requestBody.data(using: .utf8)!)
             else {
-                self.responseBody = "Invalid JSON object"
+                self.responseBody = "Invalid request JSON"
                 return
             }
 
@@ -65,7 +65,7 @@ final class APIRequest {
                 let jsonData = try? JSONSerialization.data(
                     withJSONObject: jsonObj)
             else {
-                self.responseBody = "Invalid JSON data"
+                self.responseBody = "Invalid request JSON"
                 return
             }
             request.httpBody = jsonData
@@ -78,6 +78,7 @@ final class APIRequest {
 
         self.statusCode = resp.statusCode.description
         self.responseBody = String(decoding: data, as: UTF8.self)
+        prettifyResponseBody()
     }
 
     func prettifyRequestBody() {
