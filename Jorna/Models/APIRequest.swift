@@ -8,7 +8,7 @@ enum HTTPMethod: String, CaseIterable, Identifiable, Codable {
 }
 
 @Model
-class APIRequest {
+final class APIRequest {
     var requestBody: String
     var responseBody: String
     var statusCode: String

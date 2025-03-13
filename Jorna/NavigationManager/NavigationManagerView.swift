@@ -11,7 +11,12 @@ struct NavigationManagerView: View {
                 ForEach(requests) { request in
                     NavigationLink(
                         request.name,
-                        destination: RequestView(apiRequest: request))
+                        destination: RequestView(apiRequest: request)
+                    ).contextMenu {
+                        Button("Delete request") {
+                            deleteRequest(request)
+                        }
+                    }
                 }
                 Button("Add Request") {
                     addRequest()
@@ -26,6 +31,9 @@ struct NavigationManagerView: View {
 
     func addRequest() {
         modelContext.insert(APIRequest())
+    }
+    func deleteRequest(_ request: APIRequest) {
+        modelContext.delete(request)
     }
 }
 

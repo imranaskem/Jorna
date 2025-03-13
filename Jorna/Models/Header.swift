@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 @Model
-class Header {
+final class Header {
     var enabled: Bool
     var key: String
     var value: String
