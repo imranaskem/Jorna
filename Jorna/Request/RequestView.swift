@@ -1,9 +1,12 @@
 import SwiftData
 import SwiftUI
+import Foundation
 
 struct RequestView: View {
     @Environment(\.modelContext) var modelContext
     @Bindable var apiRequest: APIRequest
+    
+    @Query var headers: [Header]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -26,7 +29,7 @@ struct RequestView: View {
                 Button("Send", systemImage: "paperplane.fill") {
                     Task {
                         do {
-                            try await apiRequest.makeRequest()
+                            try await makeRequest()
                         }
                     }
                 }
@@ -41,12 +44,8 @@ struct RequestView: View {
                 }
 
                 VStack {
-                    ForEach($apiRequest.headers) { $header in
-                        HStack {
-                            Toggle("Enable", isOn: $header.enabled)
-                            TextField("Key", text: $header.key)
-                            TextField("Value", text: $header.value)
-                        }
+                    ForEach(headers) { header in
+                        HeaderView(header: header)
                     }
                 }
             }
@@ -90,7 +89,7 @@ struct RequestView: View {
     }
     
     func addHeader() {
-        apiRequest.headers.append(Header())
+        modelContext.insert(Header())
     }
 
     func responseColour(statusCode: String) -> Color {
@@ -99,5 +98,52 @@ struct RequestView: View {
         } else {
             return .red
         }
+    }
+    
+    func makeRequest() async throws {
+        apiRequest.prettifyRequestBody()
+        guard let url = URL(string: apiRequest.endpoint)
+        else {
+            fatalError("Invalid endpoint string")
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = apiRequest.method.rawValue
+
+        for header in headers.filter({ $0.enabled }) {
+            if header.key != "" {
+                request.setValue(
+                    header.value,
+                    forHTTPHeaderField: header.key)
+            }
+        }
+
+        if !apiRequest.requestBody.isEmpty {
+            guard
+                let jsonObj = try? JSONSerialization.jsonObject(
+                    with: apiRequest.requestBody.data(using: .utf8)!)
+            else {
+                apiRequest.responseBody = "Invalid request JSON"
+                return
+            }
+
+            guard
+                let jsonData = try? JSONSerialization.data(
+                    withJSONObject: jsonObj)
+            else {
+                apiRequest.responseBody = "Invalid request JSON"
+                return
+            }
+            request.httpBody = jsonData
+        }
+
+        let (data, response) = try await URLSession.shared.data(
+            for: request)
+
+        let resp = response as! HTTPURLResponse
+
+        apiRequest.statusCode = resp.statusCode.description
+        apiRequest.responseBody = String(decoding: data, as: UTF8.self)
+        apiRequest.prettifyResponseBody()
     }
 }
