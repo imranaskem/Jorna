@@ -29,7 +29,7 @@ struct RequestView: View {
                 Button("Send", systemImage: "paperplane.fill") {
                     Task {
                         do {
-                            try await apiRequest.makeRequest()
+                            try await makeRequest()
                         }
                     }
                 }
@@ -98,5 +98,52 @@ struct RequestView: View {
         } else {
             return .red
         }
+    }
+    
+    func makeRequest() async throws {
+        apiRequest.prettifyRequestBody()
+        guard let url = URL(string: apiRequest.endpoint)
+        else {
+            fatalError("Invalid endpoint string")
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = apiRequest.method.rawValue
+
+        for header in headers.filter({ $0.enabled }) {
+            if header.key != "" {
+                request.setValue(
+                    header.value,
+                    forHTTPHeaderField: header.key)
+            }
+        }
+
+        if !apiRequest.requestBody.isEmpty {
+            guard
+                let jsonObj = try? JSONSerialization.jsonObject(
+                    with: apiRequest.requestBody.data(using: .utf8)!)
+            else {
+                apiRequest.responseBody = "Invalid request JSON"
+                return
+            }
+
+            guard
+                let jsonData = try? JSONSerialization.data(
+                    withJSONObject: jsonObj)
+            else {
+                apiRequest.responseBody = "Invalid request JSON"
+                return
+            }
+            request.httpBody = jsonData
+        }
+
+        let (data, response) = try await URLSession.shared.data(
+            for: request)
+
+        let resp = response as! HTTPURLResponse
+
+        apiRequest.statusCode = resp.statusCode.description
+        apiRequest.responseBody = String(decoding: data, as: UTF8.self)
+        apiRequest.prettifyResponseBody()
     }
 }
