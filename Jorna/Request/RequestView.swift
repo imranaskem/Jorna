@@ -1,9 +1,12 @@
 import SwiftData
 import SwiftUI
+import Foundation
 
 struct RequestView: View {
     @Environment(\.modelContext) var modelContext
     @Bindable var apiRequest: APIRequest
+    
+    @Query var headers: [Header]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -41,12 +44,8 @@ struct RequestView: View {
                 }
 
                 VStack {
-                    ForEach($apiRequest.headers) { $header in
-                        HStack {
-                            Toggle("Enable", isOn: $header.enabled)
-                            TextField("Key", text: $header.key)
-                            TextField("Value", text: $header.value)
-                        }
+                    ForEach(headers) { header in
+                        HeaderView(header: header)
                     }
                 }
             }
@@ -90,7 +89,7 @@ struct RequestView: View {
     }
     
     func addHeader() {
-        apiRequest.headers.append(Header())
+        modelContext.insert(Header())
     }
 
     func responseColour(statusCode: String) -> Color {
