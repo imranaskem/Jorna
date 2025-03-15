@@ -5,7 +5,7 @@ import Foundation
 struct RequestView: View {
     @Environment(\.modelContext) var modelContext
     @Bindable var apiRequest: APIRequest
-    
+    @State private var requestDuration = "-"
     @Query var headers: [Header]
 
     var body: some View {
@@ -55,6 +55,9 @@ struct RequestView: View {
                     HStack {
                         Text("Request")
                         Spacer()
+                        Button("Clear") {
+                            apiRequest.requestBody = ""
+                        }.buttonStyle(.link)
                         Button("Prettify") {
                             apiRequest.prettifyRequestBody()
                         }
@@ -70,7 +73,11 @@ struct RequestView: View {
                         Text("Response")
                         Text(apiRequest.statusCode).foregroundStyle(
                             responseColour(statusCode: apiRequest.statusCode))
+                        Text("\(requestDuration)ms")
                         Spacer()
+                        Button("Clear") {
+                            apiRequest.responseBody = ""
+                        }.buttonStyle(.link)
                         Button("Prettify") {
                             apiRequest.prettifyResponseBody()
                         }
@@ -101,6 +108,7 @@ struct RequestView: View {
     }
     
     func makeRequest() async throws {
+        let start = Date.now
         apiRequest.prettifyRequestBody()
         guard let url = URL(string: apiRequest.endpoint)
         else {
@@ -145,5 +153,9 @@ struct RequestView: View {
         apiRequest.statusCode = resp.statusCode.description
         apiRequest.responseBody = String(decoding: data, as: UTF8.self)
         apiRequest.prettifyResponseBody()
+        let finish = Date.now
+        
+        let duration = finish.timeIntervalSince(start) * 1000
+        requestDuration = String(Int(duration.rounded()))
     }
 }

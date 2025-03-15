@@ -3,7 +3,7 @@ import SwiftUI
 
 struct NavigationManagerView: View {
     @Environment(\.modelContext) var modelContext
-    @Query var requests: [APIRequest]
+    @Query(sort: \APIRequest.createdAt) var requests: [APIRequest]
 
     var body: some View {
         NavigationSplitView {
@@ -35,8 +35,4 @@ struct NavigationManagerView: View {
     func deleteRequest(_ request: APIRequest) {
         modelContext.delete(request)
     }
-}
-
-#Preview {
-    NavigationManagerView()
 }
