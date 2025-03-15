@@ -18,14 +18,16 @@ struct NavigationManagerView: View {
                         }
                     }
                 }
-                Button("Add Request") {
-                    addRequest()
-                }
-
             }
         } detail: {
             ContentUnavailableView(
                 "Select a request", systemImage: "arrowshape.left.fill")
+        }.toolbar {
+            ToolbarItem(placement: .automatic) {
+                Button("Add Request") {
+                    addRequest()
+                }
+            }
         }
     }
 
