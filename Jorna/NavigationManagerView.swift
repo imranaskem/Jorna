@@ -11,7 +11,7 @@ struct NavigationManagerView: View {
                 ForEach(requests) { request in
                     NavigationLink(
                         request.name,
-                        destination: RequestView(apiRequest: request)
+                        destination: DetailView(apiRequest: request)
                     ).contextMenu {
                         Button("Delete request") {
                             deleteRequest(request)
@@ -36,5 +36,6 @@ struct NavigationManagerView: View {
     }
     func deleteRequest(_ request: APIRequest) {
         modelContext.delete(request)
+        try? modelContext.save()
     }
 }
