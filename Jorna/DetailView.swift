@@ -2,10 +2,11 @@ import SwiftData
 import SwiftUI
 import Foundation
 
-struct RequestView: View {
+struct DetailView: View {
     @Environment(\.modelContext) var modelContext
     @Bindable var apiRequest: APIRequest
     @State private var requestDuration = "-"
+    
     @Query var headers: [Header]
 
     var body: some View {
@@ -35,58 +36,17 @@ struct RequestView: View {
                 }
                 .keyboardShortcut(.return, modifiers: .command)
             }
-
-            VStack {
-                HStack {
-                    Text("Headers").fontWeight(.bold)
-                    Button("Add") { addHeader() }
-                    Spacer()
-                }
-
-                VStack {
-                    ForEach(headers) { header in
-                        HeaderView(header: header)
-                    }
-                }
+            HStack {
+                Spacer()
+                Text(apiRequest.statusCode).foregroundStyle(
+                    responseColour(statusCode: apiRequest.statusCode))
+                Text("\(requestDuration)ms")
             }
+            
 
             HSplitView {
-                VStack {
-                    HStack {
-                        Text("Request")
-                        Spacer()
-                        Button("Clear") {
-                            apiRequest.requestBody = ""
-                        }.buttonStyle(.link)
-                        Button("Prettify") {
-                            apiRequest.prettifyRequestBody()
-                        }
-                        .buttonStyle(.link)
-                    }
-
-                    TextEditor(text: $apiRequest.requestBody)
-                        .cornerRadius(8)
-                }
-                .padding(.horizontal, 5)
-                VStack {
-                    HStack {
-                        Text("Response")
-                        Text(apiRequest.statusCode).foregroundStyle(
-                            responseColour(statusCode: apiRequest.statusCode))
-                        Text("\(requestDuration)ms")
-                        Spacer()
-                        Button("Clear") {
-                            apiRequest.responseBody = ""
-                        }.buttonStyle(.link)
-                        Button("Prettify") {
-                            apiRequest.prettifyResponseBody()
-                        }
-                        .buttonStyle(.link)
-                    }
-                    TextEditor(text: $apiRequest.responseBody)
-                        .cornerRadius(8)
-                }
-                .padding(.horizontal, 5)
+                RequestView(apiRequest: apiRequest)
+                ResponseView(apiRequest: apiRequest)
             }
             .font(.system(size: 12, design: .monospaced))
             .frame(minHeight: 300)
@@ -149,6 +109,13 @@ struct RequestView: View {
             for: request)
 
         let resp = response as! HTTPURLResponse
+        
+        apiRequest.responseHeaders = []
+        
+        resp.allHeaderFields.forEach { (key, value) in
+            let header = Header(key: String(describing: key), value: String(describing: value))
+            apiRequest.responseHeaders.append(header)
+        }
 
         apiRequest.statusCode = resp.statusCode.description
         apiRequest.responseBody = String(decoding: data, as: UTF8.self)
@@ -159,3 +126,4 @@ struct RequestView: View {
         requestDuration = String(Int(duration.rounded()))
     }
 }
+

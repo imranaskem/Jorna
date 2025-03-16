@@ -16,24 +16,29 @@ final class APIRequest {
     var name: String
     var endpoint: String
     var createdAt: Date?
-    
+
     @Relationship(deleteRule: .cascade)
-    var headers: [Header]
+    var requestHeaders: [Header]
+
+    @Relationship(deleteRule: .cascade)
+    var responseHeaders: [Header]
 
     init(
         requestBody: String = "", responseBody: String = "",
         statusCode: String = "", method: HTTPMethod = .GET,
-        name: String = "New Request", headers: [Header] = [],
-        endpoint: String = "", createdAt: Date = Date.now
+        name: String = "New Request", requestHeaders: [Header] = [],
+        responseHeaders: [Header] = [], endpoint: String = "",
+        createdAt: Date = Date.now
     ) {
         self.requestBody = requestBody
         self.responseBody = responseBody
         self.statusCode = statusCode
         self.method = method
         self.name = name
-        self.headers = headers
+        self.requestHeaders = requestHeaders
         self.endpoint = endpoint
         self.createdAt = createdAt
+        self.responseHeaders = responseHeaders
     }
 
     func prettifyRequestBody() {
