@@ -1,18 +1,16 @@
+import Foundation
 import SwiftData
 import SwiftUI
-import Foundation
 
 struct DetailView: View {
     @Environment(\.modelContext) var modelContext
     @Bindable var apiRequest: APIRequest
     @State private var requestDuration = "-"
-    
-    @Query var headers: [Header]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             TextField("Request Name", text: $apiRequest.name).frame(width: 300)
-            
+
             HStack {
                 Picker(String(), selection: $apiRequest.method) {
                     ForEach(HTTPMethod.allCases) { method in
@@ -42,7 +40,6 @@ struct DetailView: View {
                     responseColour(statusCode: apiRequest.statusCode))
                 Text("\(requestDuration)ms")
             }
-            
 
             HSplitView {
                 RequestView(apiRequest: apiRequest)
@@ -54,7 +51,7 @@ struct DetailView: View {
         }
         .padding()
     }
-    
+
     func addHeader() {
         modelContext.insert(Header())
     }
@@ -66,7 +63,7 @@ struct DetailView: View {
             return .red
         }
     }
-    
+
     func makeRequest() async throws {
         let start = Date.now
         apiRequest.prettifyRequestBody()
@@ -78,7 +75,7 @@ struct DetailView: View {
         var request = URLRequest(url: url)
         request.httpMethod = apiRequest.method.rawValue
 
-        for header in headers.filter({ $0.enabled }) {
+        for header in apiRequest.requestHeaders.filter({ $0.enabled }) {
             if header.key != "" {
                 request.setValue(
                     header.value,
@@ -109,11 +106,12 @@ struct DetailView: View {
             for: request)
 
         let resp = response as! HTTPURLResponse
-        
-        apiRequest.responseHeaders = []
-        
+
+        apiRequest.responseHeaders.removeAll()
+
         resp.allHeaderFields.forEach { (key, value) in
-            let header = Header(key: String(describing: key), value: String(describing: value))
+            let header = Header(
+                key: String(describing: key), value: String(describing: value))
             apiRequest.responseHeaders.append(header)
         }
 
@@ -121,9 +119,8 @@ struct DetailView: View {
         apiRequest.responseBody = String(decoding: data, as: UTF8.self)
         apiRequest.prettifyResponseBody()
         let finish = Date.now
-        
+
         let duration = finish.timeIntervalSince(start) * 1000
         requestDuration = String(Int(duration.rounded()))
     }
 }
-
