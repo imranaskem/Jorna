@@ -18,16 +18,16 @@ struct NavigationManagerView: View {
                         }
                     }
                 }
-            }
+            }.toolbar {
+                ToolbarItem {
+                    Button(action: addRequest) {
+                        Label("Add Item", systemImage: "plus")
+                    }
+                }
+            }.navigationSplitViewColumnWidth(min: 200, ideal: 250)
         } detail: {
             ContentUnavailableView(
                 "Select a request", systemImage: "arrowshape.left.fill")
-        }.toolbar {
-            ToolbarItem(placement: .automatic) {
-                Button("Add Request") {
-                    addRequest()
-                }
-            }
         }
     }
 

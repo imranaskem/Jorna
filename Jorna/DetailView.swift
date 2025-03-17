@@ -6,6 +6,7 @@ struct DetailView: View {
     @Environment(\.modelContext) var modelContext
     @Bindable var apiRequest: APIRequest
     @State private var requestDuration = "-"
+    @State private var isLoading = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -41,13 +42,25 @@ struct DetailView: View {
                 Text("\(requestDuration)ms")
             }
 
-            HSplitView {
-                RequestView(apiRequest: apiRequest)
-                ResponseView(apiRequest: apiRequest)
+            ZStack {
+                HSplitView {
+                    RequestView(apiRequest: apiRequest)
+                    ResponseView(apiRequest: apiRequest)
+
+                }
+                .font(.system(size: 12, design: .monospaced))
+                .frame(minHeight: 300)
+                .cornerRadius(8)
+
+                if isLoading {
+                    RoundedRectangle(cornerRadius: 8).opacity(0.7)
+                        .foregroundStyle(.white)
+                    ProgressView("Loading...").scaleEffect(2)
+                        .font(
+                            .largeTitle
+                        ).tint(.black)
+                }
             }
-            .font(.system(size: 12, design: .monospaced))
-            .frame(minHeight: 300)
-            .cornerRadius(8)
         }
         .padding()
     }
@@ -65,6 +78,7 @@ struct DetailView: View {
     }
 
     func makeRequest() async throws {
+        isLoading = true
         let start = Date.now
         apiRequest.prettifyRequestBody()
         guard let url = URL(string: apiRequest.endpoint)
@@ -122,5 +136,6 @@ struct DetailView: View {
 
         let duration = finish.timeIntervalSince(start) * 1000
         requestDuration = String(Int(duration.rounded()))
+        isLoading = false
     }
 }
