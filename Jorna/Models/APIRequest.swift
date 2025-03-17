@@ -22,6 +22,8 @@ final class APIRequest {
 
     @Relationship(deleteRule: .cascade, inverse: \ResponseHeader.apiRequest)
     var responseHeaders = [ResponseHeader]()
+    
+    var collection: RequestCollection?
 
     init(
         requestBody: String = "", responseBody: String = "", statusCode: String = "",
