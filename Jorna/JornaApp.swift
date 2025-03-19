@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import SwiftData
 
 @main
 struct JornaApp: App {
