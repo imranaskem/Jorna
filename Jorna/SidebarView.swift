@@ -1,12 +1,12 @@
 import Foundation
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct SidebarView: View {
     @Environment(\.modelContext) var modelContext
     @Query(sort: \RequestCollection.createdAt) var collections:
         [RequestCollection]
-    
+
     var body: some View {
         List {
             ForEach(collections) { collection in
@@ -17,7 +17,8 @@ struct SidebarView: View {
                             destination: DetailView(apiRequest: request)
                         ).contextMenu {
                             Button("Delete request") {
-                                deleteRequest(from: collection, request: request)
+                                deleteRequest(
+                                    from: collection, request: request)
                             }
                         }
                     }
@@ -29,9 +30,6 @@ struct SidebarView: View {
                         .contextMenu {
                             Button("Delete collection") {
                                 deleteCollection(collection)
-                            }
-                            Button("Edit collection") {
-                                
                             }
                         }
                 }
@@ -52,20 +50,27 @@ struct SidebarView: View {
     func addCollection() {
         modelContext.insert(RequestCollection(name: "New collection"))
     }
+
     func addRequest(to collection: RequestCollection) {
         collection.requests.append(APIRequest(collection: collection))
     }
-    func deleteRequest(from collection: RequestCollection, request: APIRequest) {
+
+    func deleteRequest(from collection: RequestCollection, request: APIRequest)
+    {
         collection.requests.remove(
             at: collection.requests.firstIndex(of: request)!)
         modelContext.delete(request)
     }
+
     func deleteCollection(_ collection: RequestCollection) {
-        let tempRequests = collection.requests
-        for request in tempRequests {
-            modelContext.delete(request)
+        if !collection.requests.isEmpty {
+            let tempRequests = collection.requests
+            for request in tempRequests {
+                modelContext.delete(request)
+            }
+            collection.requests.removeAll()
         }
-        collection.requests.removeAll()
+        
         modelContext.delete(collection)
         try? modelContext.save()
     }
