@@ -3,7 +3,7 @@ import SwiftData
 import SwiftJSONFormatter
 
 enum HTTPMethod: String, CaseIterable, Identifiable, Codable {
-    case GET, POST
+    case GET, POST, PUT, PATCH, DELETE, OPTIONS
     var id: Self { self }
 }
 
@@ -17,27 +17,25 @@ final class APIRequest {
     var endpoint: String
     var createdAt: Date?
 
-    @Relationship(deleteRule: .cascade)
-    var requestHeaders: [Header]
+    @Relationship(deleteRule: .cascade, inverse: \RequestHeader.apiRequest)
+    var requestHeaders = [RequestHeader]()
 
-    @Relationship(deleteRule: .cascade)
-    var responseHeaders: [Header]
+    @Relationship(deleteRule: .cascade, inverse: \ResponseHeader.apiRequest)
+    var responseHeaders = [ResponseHeader]()
 
     init(
-        requestBody: String = "", responseBody: String = "",
-        statusCode: String = "", method: HTTPMethod = .GET,
-        name: String = "New Request", requestHeaders: [Header] = [],
-        responseHeaders: [Header] = [], endpoint: String = "",
-        createdAt: Date = Date.now
+        requestBody: String = "", responseBody: String = "", statusCode: String = "",
+        method: HTTPMethod = .GET, name: String = "New Request", endpoint: String = "",
+        createdAt: Date = Date.now, requestHeaders: [RequestHeader] = [], responseHeaders: [ResponseHeader] = []
     ) {
         self.requestBody = requestBody
         self.responseBody = responseBody
         self.statusCode = statusCode
         self.method = method
         self.name = name
-        self.requestHeaders = requestHeaders
         self.endpoint = endpoint
         self.createdAt = createdAt
+        self.requestHeaders = requestHeaders
         self.responseHeaders = responseHeaders
     }
 

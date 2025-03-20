@@ -36,6 +36,5 @@ struct NavigationManagerView: View {
     }
     func deleteRequest(_ request: APIRequest) {
         modelContext.delete(request)
-        try? modelContext.save()
     }
 }

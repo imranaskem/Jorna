@@ -23,15 +23,19 @@ struct ResponseView: View {
                     }
                     .buttonStyle(.link)
                 }
-                TextEditor(text: $apiRequest.responseBody)
+                TextEditor(text: .constant(apiRequest.responseBody))
                     .cornerRadius(8)
             } else if selectedTab == 2 {
                 VStack {
                     ScrollView {
-                        ForEach(apiRequest.responseHeaders.sorted(by: <)) {
+                        ForEach(apiRequest.responseHeaders) {
                             header in
-                            HeaderView(header: header, showOptions: false)
+                            HStack {
+                                TextField("Key", text: .constant(header.key))
+                                TextField("Value", text: .constant(header.value))
+                            }
                         }
+                        
                     }
 
                 }
