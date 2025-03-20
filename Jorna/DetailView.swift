@@ -65,10 +65,6 @@ struct DetailView: View {
         .padding()
     }
 
-    func addHeader() {
-        modelContext.insert(Header())
-    }
-
     func responseColour(statusCode: String) -> Color {
         if statusCode.starts(with: "2") {
             return .green
@@ -121,13 +117,19 @@ struct DetailView: View {
 
         let resp = response as! HTTPURLResponse
 
+        let tempHeaders = apiRequest.responseHeaders
         apiRequest.responseHeaders.removeAll()
-
+        for header in tempHeaders {
+            modelContext.delete(header)
+        }
+        
         resp.allHeaderFields.forEach { (key, value) in
-            let header = Header(
-                key: String(describing: key), value: String(describing: value))
+            let header = ResponseHeader(
+                key: String(describing: key), value: String(describing: value), apiRequest: apiRequest)
             apiRequest.responseHeaders.append(header)
         }
+        
+        apiRequest.responseHeaders = apiRequest.responseHeaders.sorted(by: <)
 
         apiRequest.statusCode = resp.statusCode.description
         apiRequest.responseBody = String(decoding: data, as: UTF8.self)

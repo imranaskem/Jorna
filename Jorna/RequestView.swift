@@ -35,17 +35,37 @@ struct RequestView: View {
 
             } else if selectedTab == 2 {
                 HStack {
-                    Button("Add") { apiRequest.requestHeaders.append(Header()) }
+                    Button("Add") {
+                        apiRequest.requestHeaders.append(
+                            RequestHeader(
+                                enabled: true, key: "", value: "",
+                                apiRequest: apiRequest))
+                    }
                     Spacer()
                 }
 
                 VStack {
-                    ForEach(apiRequest.requestHeaders) { header in
-                        HeaderView(header: header, showOptions: true)
+                    ForEach($apiRequest.requestHeaders) { $header in
+                        HStack {
+                            Toggle("Enable", isOn: $header.enabled)
+
+                            TextField("Key", text: $header.key)
+
+                            TextField("Value", text: $header.value)
+                            Button {
+                                deleteRequestHeader(header: header)
+                            } label: {
+                                Image(systemName: "trash")
+                            }
+                        }
                     }
                 }
             }
             Spacer()
         }
+    }
+    func deleteRequestHeader(header: RequestHeader) {
+        apiRequest.requestHeaders.remove(at: apiRequest.requestHeaders.firstIndex(of: header)!)
+        modelContext.delete(header)
     }
 }
