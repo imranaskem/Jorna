@@ -10,28 +10,25 @@ struct SidebarView: View {
     var body: some View {
         List {
             ForEach(collections) { collection in
-                Section {
-                    ForEach(collection.requests) { request in
-                        NavigationLink(
-                            request.name,
-                            destination: DetailView(apiRequest: request)
-                        ).contextMenu {
-                            Button("Delete request") {
-                                deleteRequest(
-                                    from: collection, request: request)
-                            }
+                Text(collection.name).font(.title3).contextMenu {
+                    Button("Delete collection") {
+                        deleteCollection(collection)
+                    }
+                }
+                
+                ForEach(collection.requests) { request in
+                    NavigationLink(
+                        request.name,
+                        destination: DetailView(apiRequest: request)
+                    ).contextMenu {
+                        Button("Delete request") {
+                            deleteRequest(
+                                from: collection, request: request)
                         }
                     }
-                    Button("Add") {
-                        addRequest(to: collection)
-                    }
-                } header: {
-                    Text(collection.name).font(.title3)
-                        .contextMenu {
-                            Button("Delete collection") {
-                                deleteCollection(collection)
-                            }
-                        }
+                }
+                Button("Add") {
+                    addRequest(to: collection)
                 }
             }
         }.toolbar {
