@@ -8,8 +8,8 @@ struct DeleteData: View {
                 do {
                     try modelContext.delete(model: APIRequest.self)
                     try modelContext.delete(model: RequestCollection.self)
-                    try modelContext.delete(model: Header.self)
-                    
+                    try modelContext.delete(model: RequestHeader.self)
+                    try modelContext.delete(model: ResponseHeader.self)
                 } catch {
                     print(error.localizedDescription)
                 }

@@ -10,7 +10,31 @@ struct SidebarView: View {
     var body: some View {
         List {
             ForEach(collections) { collection in
-                SidebarCollectionView(collection: collection)
+                Section {
+                    ForEach(collection.requests) { request in
+                        NavigationLink(
+                            request.name,
+                            destination: DetailView(apiRequest: request)
+                        ).contextMenu {
+                            Button("Delete request") {
+                                deleteRequest(from: collection, request: request)
+                            }
+                        }
+                    }
+                    Button("Add") {
+                        addRequest(to: collection)
+                    }
+                } header: {
+                    Text(collection.name).font(.title3)
+                        .contextMenu {
+                            Button("Delete collection") {
+                                deleteCollection(collection)
+                            }
+                            Button("Edit collection") {
+                                
+                            }
+                        }
+                }
             }
         }.toolbar {
             ToolbarItem {
@@ -27,5 +51,22 @@ struct SidebarView: View {
 
     func addCollection() {
         modelContext.insert(RequestCollection(name: "New collection"))
+    }
+    func addRequest(to collection: RequestCollection) {
+        collection.requests.append(APIRequest(collection: collection))
+    }
+    func deleteRequest(from collection: RequestCollection, request: APIRequest) {
+        collection.requests.remove(
+            at: collection.requests.firstIndex(of: request)!)
+        modelContext.delete(request)
+    }
+    func deleteCollection(_ collection: RequestCollection) {
+        let tempRequests = collection.requests
+        for request in tempRequests {
+            modelContext.delete(request)
+        }
+        collection.requests.removeAll()
+        modelContext.delete(collection)
+        try? modelContext.save()
     }
 }

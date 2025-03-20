@@ -9,6 +9,7 @@ struct JornaApp: App {
             APIRequest.self,
             RequestHeader.self,
             ResponseHeader.self,
+            RequestCollection.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

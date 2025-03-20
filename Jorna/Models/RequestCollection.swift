@@ -4,14 +4,13 @@ import SwiftData
 @Model
 final class RequestCollection {
     var name: String
-    var editMode: Bool = false
     
-    @Relationship(deleteRule: .cascade)
+    @Relationship(deleteRule: .cascade, inverse: \APIRequest.collection)
     var requests: [APIRequest]
     
     var createdAt: Date
     
-    init(name: String, requests: [APIRequest] = [], createdAt: Date = Date.now, editMode: Bool = false) {
+    init(name: String, requests: [APIRequest] = [], createdAt: Date = Date.now) {
         self.name = name
         self.requests = requests
         self.createdAt = createdAt

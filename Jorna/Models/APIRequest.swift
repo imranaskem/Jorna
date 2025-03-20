@@ -28,7 +28,7 @@ final class APIRequest {
     init(
         requestBody: String = "", responseBody: String = "", statusCode: String = "",
         method: HTTPMethod = .GET, name: String = "New Request", endpoint: String = "",
-        createdAt: Date = Date.now, requestHeaders: [RequestHeader] = [], responseHeaders: [ResponseHeader] = []
+        createdAt: Date = Date.now, requestHeaders: [RequestHeader] = [], responseHeaders: [ResponseHeader] = [], collection: RequestCollection? = nil
     ) {
         self.requestBody = requestBody
         self.responseBody = responseBody
@@ -39,6 +39,7 @@ final class APIRequest {
         self.createdAt = createdAt
         self.requestHeaders = requestHeaders
         self.responseHeaders = responseHeaders
+        self.collection = collection
     }
 
     func prettifyRequestBody() {
