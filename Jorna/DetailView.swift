@@ -79,7 +79,9 @@ struct DetailView: View {
         apiRequest.prettifyRequestBody()
         guard let url = URL(string: apiRequest.endpoint)
         else {
-            fatalError("Invalid endpoint string")
+            apiRequest.responseBody = "Invalid endpoint string"
+            isLoading = false
+            return
         }
 
         var request = URLRequest(url: url)
@@ -99,6 +101,7 @@ struct DetailView: View {
                     with: apiRequest.requestBody.data(using: .utf8)!)
             else {
                 apiRequest.responseBody = "Invalid request JSON"
+                isLoading = false
                 return
             }
 
@@ -107,37 +110,45 @@ struct DetailView: View {
                     withJSONObject: jsonObj)
             else {
                 apiRequest.responseBody = "Invalid request JSON"
+                isLoading = false
                 return
             }
             request.httpBody = jsonData
         }
+        do {
+            let (data, response) = try await URLSession.shared.data(
+                for: request)
+            
+            let resp = response as! HTTPURLResponse
 
-        let (data, response) = try await URLSession.shared.data(
-            for: request)
+            let tempHeaders = apiRequest.responseHeaders
+            apiRequest.responseHeaders.removeAll()
+            for header in tempHeaders {
+                modelContext.delete(header)
+            }
+            
+            resp.allHeaderFields.forEach { (key, value) in
+                let header = ResponseHeader(
+                    key: String(describing: key), value: String(describing: value), apiRequest: apiRequest)
+                apiRequest.responseHeaders.append(header)
+            }
+            
+            apiRequest.responseHeaders = apiRequest.responseHeaders.sorted(by: <)
 
-        let resp = response as! HTTPURLResponse
+            apiRequest.statusCode = resp.statusCode.description
+            apiRequest.responseBody = String(decoding: data, as: UTF8.self)
+            apiRequest.prettifyResponseBody()
+            let finish = Date.now
 
-        let tempHeaders = apiRequest.responseHeaders
-        apiRequest.responseHeaders.removeAll()
-        for header in tempHeaders {
-            modelContext.delete(header)
+            let duration = finish.timeIntervalSince(start) * 1000
+            requestDuration = String(Int(duration.rounded()))
+            isLoading = false
+        } catch {
+            apiRequest.responseBody = error.localizedDescription
+            isLoading = false
         }
         
-        resp.allHeaderFields.forEach { (key, value) in
-            let header = ResponseHeader(
-                key: String(describing: key), value: String(describing: value), apiRequest: apiRequest)
-            apiRequest.responseHeaders.append(header)
-        }
+
         
-        apiRequest.responseHeaders = apiRequest.responseHeaders.sorted(by: <)
-
-        apiRequest.statusCode = resp.statusCode.description
-        apiRequest.responseBody = String(decoding: data, as: UTF8.self)
-        apiRequest.prettifyResponseBody()
-        let finish = Date.now
-
-        let duration = finish.timeIntervalSince(start) * 1000
-        requestDuration = String(Int(duration.rounded()))
-        isLoading = false
     }
 }
